@@ -1,0 +1,27 @@
+{
+  "name": "loalogsdeathparser",
+  "version": "1.0.0",
+  "description": "Deaths parser for LOA Logs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iwllyu/LOALogsDeathParser.git"
+  },
+  "keywords": [
+    "Lost Ark",
+    "LOA logs",
+    "deaths parser"
+  ],
+  "author": "iwllyu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iwllyu/LOALogsDeathParser/issues"
+  },
+  "homepage": "https://github.com/iwllyu/LOALogsDeathParser#readme",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}

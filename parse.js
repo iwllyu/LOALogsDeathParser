@@ -5,9 +5,11 @@ By @iwllyu on discord. Lost Ark Dev server, #loa-logs channel.
 See README.md for instructions
 */
 const sqlite3 = require('sqlite3').verbose();
+const zlib = require('zlib');
+
 
 // # Populate these fields
-let startId = 3111                                        // ID of the first encounter in the range
+let startId = 1                                        // ID of the first encounter in the range
 let endId = 9999                                          // ID of the last encounter in the range
 var excludeIds = []
 // excludeIds = [3111, 3112, 3114]                      // Uncomment if you want to list IDs individually
@@ -34,12 +36,11 @@ let db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-
-
 /*
 var encounters = {
-    3028: {
-        fight_start: 1713588802982
+    3028: { 
+        fight_start: 1723091333885,
+        fight_end: 1723091858231,
         players: []
     }
 }
@@ -97,7 +98,7 @@ function parseEncounter() {
 
             if (encounters[row.id] == undefined) {
                 encounters[row.id] = {
-                    fight_start: row.fight_start,
+                    fight_start: JSON.parse(row.misc).ntpFightStart,
                     fight_end: row.last_combat_packet,
                     players: []
                 }
@@ -131,19 +132,26 @@ function parseEntity() {
             }
 
             let eid = row.encounter_id.toString()
-            let pojo = JSON.parse(row.damage_stats)
+            let rowDamageStatsString
+            if (typeof row.damage_stats == 'string') {
+                rowDamageStatsString = row.damage_stats
+            } else { // is compressed and need to uncompress
+                let blobObj = row.damage_stats
+                rowDamageStatsString = zlib.gunzipSync(blobObj).toString('utf8');
+            }
+            damageStatsPojo = JSON.parse(rowDamageStatsString)
             let fight_start = encounters[eid].fight_start
             let fight_end = encounters[eid].fight_end
             let fight_length = fight_end - fight_start
             encounters[eid].fight_length = fight_length / 1000
-            if (encounters[eid].fight_end - pojo.deathTime > 0) {
-                let deathTime = pojo.deathTime - fight_start
+            if (encounters[eid].fight_end - damageStatsPojo.deathTime > 0) {
+                let deathTime = damageStatsPojo.deathTime - fight_start
                 if (deathTime > 0) {
                     encounters[eid].players.push({
                         encounter_id: eid,
                         name: row.name,
-                        deathTime: (pojo.deathTime - fight_start) / 1000,
-                        dps: pojo.dps
+                        deathTime: (damageStatsPojo.deathTime - fight_start) / 1000,
+                        dps: damageStatsPojo.dps
                     })
                 }
             }

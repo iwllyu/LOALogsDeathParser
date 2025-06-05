@@ -17,7 +17,7 @@ var excludeIds = []
 let showEncounterId = true
 
 // # Configure DB Path
-let dbPath = "C:\\Users\\Username\\\\AppData\\Local\\LOA Logs\\encounters.db"      // Path to your LOA Logs database file
+let dbPath = "C:\\Users\\Username\\AppData\\Local\\LOA Logs\\encounters.db"      // Path to your LOA Logs database file
 
 
 let entitySql = `SELECT *
